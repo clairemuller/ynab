@@ -9,14 +9,23 @@ import (
 )
 
 func main() {
+	token := getToken()
+	resp := sendHeader(token)
+
+	fmt.Println(resp)
+}
+
+func getToken() string {
 	file, err := os.Open("token.txt")
 	check(err)
 	defer file.Close()
 
 	txt, err := ioutil.ReadAll(file)
 	check(err)
-	token := string(txt)
+	return string(txt)
+}
 
+func sendHeader(token string) *http.Response {
 	req, err := http.NewRequest("GET", "https://api.youneedabudget.com/v1/budgets", nil)
 	check(err)
 
@@ -27,7 +36,7 @@ func main() {
 	check(err)
 	defer resp.Body.Close()
 
-	fmt.Println(resp)
+	return resp
 }
 
 func check(err error) {
