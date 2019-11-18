@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -14,9 +15,19 @@ func main() {
 
 	txt, err := ioutil.ReadAll(file)
 	check(err)
-	token := txt
+	token := string(txt)
 
-	fmt.Println(string(token))
+	req, err := http.NewRequest("GET", "https://api.youneedabudget.com/v1/budgets", nil)
+	check(err)
+
+	bb := fmt.Sprintf("Bearer %s", token)
+	req.Header.Set("Authorization", bb)
+
+	resp, err := http.DefaultClient.Do(req)
+	check(err)
+	defer resp.Body.Close()
+
+	fmt.Println(resp)
 }
 
 func check(err error) {
